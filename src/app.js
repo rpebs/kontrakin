@@ -1,12 +1,16 @@
 const express = require('express');
 const { sequelize } = require('./models'); // Mengambil Sequelize instance dari model
 const houseRoutes = require('./routes/houseRoutes'); // Import rute rumah
+const path = require('path');
+
 
 const app = express();
 const port = 3000;
 
 // Middleware untuk parsing JSON
 app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Gunakan rute untuk rumah
 app.use('/api/houses', houseRoutes);

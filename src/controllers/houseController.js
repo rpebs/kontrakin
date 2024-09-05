@@ -1,5 +1,8 @@
+const { response } = require("express");
 const { House } = require("../models"); // Model House
 const { body, validationResult } = require("express-validator");
+const fs = require('fs').promises
+const path = require('path')
 
 // Mendapatkan semua rumah
 exports.getAllHouses = async (req, res) => {
@@ -33,6 +36,7 @@ exports.getHouseById = async (req, res) => {
 // Menambahkan rumah baru
 exports.createHouse = async (req, res) => {
   const { name, location, price, image, description } = req.body;
+  const file = image ? image.filename : null;
   body("name").notEmpty().withMessage("Name is required");
   body("location").notEmpty().withMessage("Location is required");
   body("price").notEmpty().withMessage("Price is required");
@@ -62,24 +66,49 @@ exports.createHouse = async (req, res) => {
 };
 
 exports.editHouse = async (req, res) => {
-  const { name, location, price, image, description } = req.body;
-  const { id } = req.params;
-  try {
-    const house = await House.findByPk(id);
-    if (!house) {
-      return res.status(404).json({ message: "House not found" });
+    const { name, location, price, description } = req.body;
+    const { id } = req.params;
+    const newImage = req.file ? req.file.filename : null;
+  
+    try {
+      const house = await House.findByPk(id);
+      if (!house) {
+        return res.status(404).json({ message: "House not found" });
+      }
+  
+      // Jika ada gambar baru, hapus gambar lama
+      if (newImage && house.image) {
+        const oldImagePath = path.join(__dirname, '../uploads', house.image);
+        console.log("Old image path:", oldImagePath); // Debugging
+  
+        try {
+          await fs.unlink(oldImagePath);
+          console.log("Old image deleted successfully");
+        } catch (err) {
+          console.error("Error deleting old image:", err.message);
+          return res.status(500).json({ error: "Error deleting old image" });
+        }
+      }
+  
+      // Update data rumah
+      house.name = name;
+      house.location = location;
+      house.price = price;
+      house.description = description;
+  
+      if (newImage) {
+        house.image = newImage;
+      }
+  
+      await house.save();
+      res.json({
+        message: "House updated successfully",
+        data: house,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-    house.name = name;
-    house.location = location;
-    house.price = price;
-    house.image = image;
-    house.description = description;
-    await house.save();
-    res.json({ message: "House updated successfully", data: house });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-}
+  };
 
 exports.deleteHouse = async (req, res) => {
   const { id } = req.params;

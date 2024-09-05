@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const houseController = require('../controllers/houseController'); // Import controller
+const upload = require('../middleware/upload');
 
 // Mendapatkan semua rumah
 router.get('/', houseController.getAllHouses);
@@ -9,10 +10,10 @@ router.get('/', houseController.getAllHouses);
 router.get('/:id', houseController.getHouseById);
 
 // Menambahkan rumah baru
-router.post('/', houseController.createHouse);
+router.post('/', upload.single('image') ,houseController.createHouse);
 
 // Mengedit rumah
-router.put('/:id', houseController.editHouse);
+router.put('/:id', upload.single('image') , houseController.editHouse);
 
 // Menghapus rumah
 router.delete('/:id', houseController.deleteHouse);
