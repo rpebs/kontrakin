@@ -1,30 +1,33 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
   const House = sequelize.define(
-    "House",
+    "User",
     {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      location: {
+      address: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      email: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      price: {
-        type: DataTypes.INTEGER,
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      gender: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      password: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       image: DataTypes.STRING,
-      description: DataTypes.TEXT,
-      created_by: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id",
-        }
-      }
     },
     {}
   );
