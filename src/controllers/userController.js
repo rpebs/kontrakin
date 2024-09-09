@@ -152,17 +152,3 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: error });
   }
 }
-
-// exports.deleteHouse = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const house = await House.findByPk(id);
-//     if (!house) {
-//       return res.status(404).json({ message: "House not found" });
-//     }
-//     await house.destroy();
-//     res.json({ message: "House deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ error: error });
-//   }
-// }
